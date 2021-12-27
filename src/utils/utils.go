@@ -13,37 +13,75 @@ import (
 	"github.com/cheran-senthil/fastrand" // cheran is amazing
 )
 
-func PlayTrack(trackID string) {}
+const (
+	AppName                       = "audius-cli"
+	AudiusAPIEndpointRetrievalURL = "https://api.audius.co"
+)
 
-func Get(path string) (resp *http.Response, err error) {
+// func PlayTrack(trackID string) {}
+
+// go doesn't pass by reference by default so
+// we must parse as a side-effect of fn
+func bodyParser(unmarshaledAPIResponse *http.Response, responseData interface{}) (err error) {
+	responseBody, err := io.ReadAll(unmarshaledAPIResponse.Body)
+	if err != nil {
+		return err
+	}
+	defer unmarshaledAPIResponse.Body.Close()
+
+	err = json.Unmarshal(responseBody, &responseData)
+	fmt.Println(responseData)
+	if err != nil {
+		return err
+	}
+
+	return
+}
+
+func Get(path string, queryOptions map[string]string, resp interface{}) (err error) {
 	endpoint, err := GetAPIEndpoint()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	uri := endpoint + "/v1/" + path
-	fmt.Println(uri)
-	return http.Get(uri)
+
+	queryOptions["app_name"] = AppName
+
+	uri := fmt.Sprintf("%s/v1/%s", endpoint, path)
+
+	response, err := http.Get(uri)
+	if err != nil {
+		return err
+	}
+
+	err = bodyParser(response, &resp)
+	if err != nil {
+		return err
+	}
+
+	return
+}
+
+func GetRandomIntInRange(bound int) (randomInt int) {
+	return int(fastrand.PCG32Bounded(uint32(bound)))
 }
 
 func GetAPIEndpoint() (endpoint string, err error) {
-	response, err := http.Get("https://api.audius.co")
+	response, err := http.Get(AudiusAPIEndpointRetrievalURL)
+	if err != nil {
+		return "", err
+	}
+	// :wat:
+	var activeAPIEndpointsTmp interface{}
+	err = bodyParser(response, &activeAPIEndpointsTmp)
 
+	// :wat-intensifies: :wiggle:
+	activeAPIEndpointsTmp2 := activeAPIEndpointsTmp.(map[string]interface{})
+	fmt.Println(activeAPIEndpointsTmp2["data"])
 	if err != nil {
 		return "", err
 	}
 
-	responseData, err := io.ReadAll(response.Body)
-	if err != nil {
-		return "", err
-	}
-
-	var data map[string][]string
-	err = json.Unmarshal(responseData, &data)
-	if err != nil {
-		return "", err
-	}
-
-	randIndex := fastrand.PCG32Bounded(uint32(len(data["data"])))
-	fmt.Println(data["data"][randIndex])
-	return data["data"][randIndex], nil
+	// activeAPIEndpoints := activeAPIEndpointsTmp2["data"]
+	// randIndex := GetRandomIntInRange(len(activeAPIEndpoints))
+	// return activeAPIEndpoints[randIndex], nil
 }
