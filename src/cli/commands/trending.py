@@ -3,15 +3,14 @@ from src.utils import api, playback
 
 
 @click.command()
-# @click.option("--count", default=1, help="Number of greetings.")
-# @click.option("--name", prompt="Your name", help="The person to greet.")
-def trending():
-    """Play the first track in trending."""
+@click.option("--rank", default=1, help="rank of trending track to play")
+def trending(rank):
+    """Play any track in trending."""
+    index = rank - 1
     response = api.get("tracks/trending")
-    first_track = response[0]
-    track_id = first_track["id"]
+    track = response[index]
+    track_id = track["id"]
     playback.stream(track_id)
-    click.echo(track_id)
 
 
 if __name__ == "__main__":

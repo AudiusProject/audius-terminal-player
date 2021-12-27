@@ -1,4 +1,14 @@
 #!/bin/bash
+set -x
 export PYTHONPATH=./
 
-python3 src/cli/commands/trending.py # test
+CMD=$1
+ARGS=$(echo "$@" | cut -d" " -f2-)
+
+echo "$ARGS"
+
+# if command matches files in cli/commands
+python3 "src/cli/commands/$CMD.py" "$ARGS"
+
+# else print help file
+# TODO
