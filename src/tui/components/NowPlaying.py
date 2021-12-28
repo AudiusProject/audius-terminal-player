@@ -1,12 +1,19 @@
 import py_cui
-from src.utils import playback
+from src.libs import playback
+
+
+class Root(py_cui.PyCUI):
+    def __init__(self, metadata=None, *args, **kwargs):
+        py_cui.PyCUI.__init__(self, *args, **kwargs)
+        self.metadata = metadata
 
 
 class NowPlaying:
     def __init__(self, root: py_cui.PyCUI):
         self.master = root
+        print(root)
         self.label = self.master.add_button(
-            "Now playing",
+            f"Now playing: {root.metadata}",
             6,
             0,
             row_span=1,
@@ -33,7 +40,7 @@ class NowPlaying:
 
 
 # def render(title, rows, columns, elements, select_callback):
-root = py_cui.PyCUI(8, 8)
+root = Root(5, 8, 8)
 root.set_title("Audius Terminal Player")
 t = NowPlaying(root)
 root.start()
