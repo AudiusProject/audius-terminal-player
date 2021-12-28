@@ -15,26 +15,26 @@ DISPLAY_MENU_PAGES = {
     "Search Tracks": {
         "api_endpoint": "tracks/search",
         "renderer": Track,
-        "title": "🔎 Search Tracks",
+        "title": "🎼 Search Tracks 🔎",
         # "select_callback": playtrack
     },
     "Search Users": {
         "api_endpoint": "users/search",
         "renderer": Track,  # TODO
-        "title": "🔎 Search Users",
+        "title": "👥 Search Users 🔎",
         # "select_callback": playtrack
     },
     "Search Playlists": {
         "api_endpoint": "playlists/search",
         "renderer": Track,  # TODO
-        "title": "🔎 Search Playlists",
+        "title": "📜 Search Playlists 🔎",
         # "select_callback": playtrack
     },
 }
 
 NAV_MENU_CONFIG = {
-    "options": DISPLAY_MENU_PAGES.keys(),
-    "title": "🧭 Navigation 🔭",
+    "options": [value["title"] for value in DISPLAY_MENU_PAGES.values()],
+    "title": "🗺️  Navigation 🔭",
 }
 
 
@@ -57,12 +57,12 @@ class Player:
         self.root.start()
 
     def render_now_playing(self):
-        return NowPlaying(self, 0, 0, 3, 2, 0, 0, self.stop_track)
+        return NowPlaying(self, 0, 0, 4, 2, 0, 0, self.stop_track)
 
     def render_nav_menu(self):
         options = NAV_MENU_CONFIG["options"]
         title = NAV_MENU_CONFIG["title"]
-        t = Table(self, title, 0, 3, 3, 2, options, self.select_display)
+        t = Table(self, title, 0, 4, 2, 2, options, self.select_display)
         return t
 
     def select_display(self, selection):
