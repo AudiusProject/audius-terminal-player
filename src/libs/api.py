@@ -1,7 +1,7 @@
 import requests
-import random
 import shutil
 import tempfile
+from src.libs import utils
 
 AUDIUS_API_ENDPOINT = "https://api.audius.co"
 
@@ -40,8 +40,4 @@ def get_api_endpoint():
     r = requests.get(AUDIUS_API_ENDPOINT)
     body = r.json()
     endpoints = body["data"]
-    return get_random_element_from_list(endpoints)
-
-
-def get_random_element_from_list(list):
-    return random.choice(list)
+    return utils.get_random_element_from_list(endpoints)

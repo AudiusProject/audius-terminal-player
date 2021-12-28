@@ -1,24 +1,20 @@
 import py_cui
+from src.utils import playback
 
 
 class NowPlaying:
     def __init__(self, root: py_cui.PyCUI):
         self.master = root
-        self.label = self.master.add_block_label(
-            "Now playing", 6, 6, row_span=2, column_span=2, padx=1, pady=0
-        )
-        self.button = self.master.add_button(
-            "play/pause playback",
-            7,
-            7,
+        self.label = self.master.add_button(
+            "Now playing",
+            6,
+            0,
             row_span=1,
-            column_span=1,
-            padx=1,
+            column_span=8,
+            padx=0,
             pady=0,
             command=self.control_playback,
         )
-
-        # self.label.add_key_command(py_cui.keys.KEY_ENTER, self.handle_select)
 
     # def handle_select(self):
     #     """handle selection"""
@@ -33,7 +29,7 @@ class NowPlaying:
 
     def control_playback(self):
         """control playback"""
-        print("PAUSING")
+        playback.stop()
 
 
 # def render(title, rows, columns, elements, select_callback):

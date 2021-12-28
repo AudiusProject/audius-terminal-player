@@ -1,3 +1,4 @@
+from datetime import date
 import time
 import threading
 
@@ -13,27 +14,29 @@ class Table:
         self.table_rows.add_key_command(py_cui.keys.KEY_ENTER, self.handle_select)
         self.select_callback = select_callback
         self.table_rows.add_item_list(elements)
+        self.table_rows.add_text_color_rule(
+            "",
+            py_cui.WHITE_ON_BLACK,
+            "contains",
+            selected_color=py_cui.BLACK_ON_WHITE,
+            match_type="line",
+        )
 
     def handle_load(self):
-        # self.master.show_loading_bar_popup("Incrementing a counter...", 100)
-        self.master.show_loading_icon_popup("Buffering", "Loading... be patient ⌛")
+        self.master.show_loading_bar_popup("Loading... be patient ⌛", 10)
         operation_thread = threading.Thread(target=self.long_operation)
         operation_thread.start()
 
     def finish_load(self):
-        print("finish_load called")
         self.master.stop_loading_popup()
 
     def long_operation(self):
-        """A simple function that demonstrates a long callback operation performed while loading popup is open"""
-
         counter = 0
-        for i in range(0, 100):
+        for i in range(0, 10):
             time.sleep(0.1)
             counter = counter + 1
             self.master.status_bar.set_text(str(counter))
-            # self.master.increment_loading_bar()
-            # When using a bar indicator, we will increment the completed counter. Will be ignored for loading icon popup
+            self.master.increment_loading_bar()
         # This is what stops the loading popup and reenters overview mode
         self.master.stop_loading_popup()
 
@@ -51,7 +54,9 @@ class Table:
 
 
 def render(title, rows, columns, elements, select_callback):
+    current_year = date.today().year
+    app_title = f"🎵 Audius Terminal Music Player 🎵 ©️ {current_year}"
     root = py_cui.PyCUI(rows, columns)
-    root.set_title(title)
+    root.set_title(app_title)
     t = Table(root, title, elements, select_callback)
     root.start()

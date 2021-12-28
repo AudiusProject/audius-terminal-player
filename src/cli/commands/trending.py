@@ -1,5 +1,5 @@
 import click
-from src.utils import api, playback
+from src.libs import api, playback
 from src.tui.renderers.Track import Track
 from src.tui.components.Table import render
 
@@ -23,4 +23,4 @@ if __name__ == "__main__":
     # trending() # TODO should we keep this?
     trending_tracks = api.get("tracks/trending")
     trending_tracks_formatted = [Track(track) for track in trending_tracks]
-    render("Trending Tracks", 8, 8, trending_tracks_formatted, playtrack)
+    render("🌋 Trending Tracks 🚀", 8, 8, trending_tracks_formatted, playtrack)
