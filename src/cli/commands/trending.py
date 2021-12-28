@@ -23,4 +23,6 @@ if __name__ == "__main__":
     # trending() # TODO should we keep this?
     trending_tracks = api.get("tracks/trending")
     trending_tracks_formatted = [Track(track) for track in trending_tracks]
-    render("🌋 Trending Tracks 🚀", 8, 8, trending_tracks_formatted, playtrack)
+    render(
+        "🌋 Trending Tracks 🚀", 8, 8, trending_tracks_formatted, playtrack, playback.stop
+    )

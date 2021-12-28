@@ -53,10 +53,11 @@ class Table:
         self.select_callback(selection, self.handle_load, self.finish_load)
 
 
-def render(title, rows, columns, elements, select_callback):
+def render(title, rows, columns, elements, select_callback, exit_callback):
     current_year = date.today().year
     app_title = f"🎵 Audius Terminal Music Player 🎵 ©️ {current_year}"
     root = py_cui.PyCUI(rows, columns)
     root.set_title(app_title)
     t = Table(root, title, elements, select_callback)
+    root.add_key_command(py_cui.keys.KEY_CTRL_C, exit_callback)
     root.start()
