@@ -1,5 +1,11 @@
 import click
 from src.utils import api, playback
+from src.tui.renderers.Track import Track
+from src.tui.components.Table import render
+
+
+def playtrack(selection):
+    playback.stream(selection.id)
 
 
 @click.command()
@@ -14,4 +20,7 @@ def trending(rank):
 
 
 if __name__ == "__main__":
-    trending()
+    # trending() # TODO should we keep this?
+    trending_tracks = api.get("tracks/trending")
+    trending_tracks_formatted = [Track(track) for track in trending_tracks]
+    render("Trending tracks", 8, 8, trending_tracks_formatted, playtrack)
