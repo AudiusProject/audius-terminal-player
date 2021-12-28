@@ -40,7 +40,7 @@ NAV_MENU_CONFIG = {
 
 class Player:
     def __init__(self):
-        root = py_cui.PyCUI(8, 8)
+        root = py_cui.PyCUI(6, 6)
         current_year = date.today().year
         app_title = f"🎵 Audius Terminal Music Player 🎵 ©️ {current_year}"
         root.set_title(app_title)
@@ -57,12 +57,12 @@ class Player:
         self.root.start()
 
     def render_now_playing(self):
-        return NowPlaying(self, 0, 0, 4, 2, 0, 0, self.stop_track)
+        return NowPlaying(self, 0, 0, 3, 2, 0, 0, self.stop_track)
 
     def render_nav_menu(self):
         options = NAV_MENU_CONFIG["options"]
         title = NAV_MENU_CONFIG["title"]
-        t = Table(self, title, 0, 4, 4, 2, options, self.select_display)
+        t = Table(self, title, 0, 3, 3, 2, options, self.select_display)
         return t
 
     def select_display(self, selection):
@@ -77,8 +77,8 @@ class Player:
             details["title"],
             2,
             0,
-            8,
             6,
+            4,
             items_formatted,
             self.playtrack,
         )
