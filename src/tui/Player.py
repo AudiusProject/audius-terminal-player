@@ -1,41 +1,40 @@
 import py_cui
 from datetime import date
 from src.libs import api, playback
+from src.tui.renderers.Track import Track
 from src.tui.components.NowPlaying import NowPlaying
 from src.tui.components.Table import Table
 
-
-def render(title, rows, columns, elements, select_callback, exit_callback):
-
-    root = py_cui.PyCUI(rows, columns)
-    root.set_title(app_title)
-    t = Table(root, title, elements, select_callback)
-    root.add_key_command(py_cui.keys.KEY_CTRL_C, exit_callback)
-    root.start()
-    #
-    trending_tracks = api.get("tracks/trending")
-    trending_tracks_formatted = [Track(track) for track in trending_tracks]
-    render(
-        "🌋 Trending Tracks 🚀", 8, 8, trending_tracks_formatted, playtrack, playback.stop
-    )
-
-
-DISPLAY_TO_SHIT = {
+DISPLAY_MENU_PAGES = {
     "Trending": {
-        api_endpoint: "tracks/trending",
-        renderer: Track,
-        title: "🌋 Trending Tracks 🚀",
-        select_callback: playtrack,
+        "api_endpoint": "tracks/trending",
+        "renderer": Track,
+        "title": "🌋 Trending Tracks 🚀",
+        # "select_callback": playtrack,
     },
     "Search Tracks": {
-        api_endpoint: "tracks/search",
-        renderer: Track,
-        title: "🔎 Search Tracks",
-        select_callback: 
+        "api_endpoint": "tracks/search",
+        "renderer": Track,
+        "title": "🔎 Search Tracks",
+        # "select_callback": playtrack
     },
-    "Menu": {
-        # connect API methods to stuff hydrating views
+    "Search Users": {
+        "api_endpoint": "users/search",
+        "renderer": Track,  # TODO
+        "title": "🔎 Search Users",
+        # "select_callback": playtrack
     },
+    "Search Playlists": {
+        "api_endpoint": "playlists/search",
+        "renderer": Track,  # TODO
+        "title": "🔎 Search Playlists",
+        # "select_callback": playtrack
+    },
+}
+
+NAV_MENU_CONFIG = {
+    "options": DISPLAY_MENU_PAGES.keys(),
+    "title": "🧭 Navigation 🔭",
 }
 
 
@@ -47,43 +46,50 @@ class Player:
         root.set_title(app_title)
         self.root = root
         self.current_display = "Trending"
+        self.current_track = {}
+        root.add_key_command(py_cui.keys.KEY_CTRL_C, playback.stop)
+        self.render()
 
     def render(self):
-        now_playing = NowPlaying(self.root)
-
+        self.nav_menu = self.render_nav_menu()
+        self.display_menu = self.render_display(self.current_display)
+        self.now_playing = self.render_now_playing()
         self.root.start()
 
-    def playtrack(selection, buffer_callback, finish_loading_callback):
-        playback.stream(selection.id, buffer_callback, finish_loading_callback)
-        self.current_track = selection
+    def render_now_playing(self):
+        return NowPlaying(self, 0, 0, 4, 2, 0, 0, self.stop_track)
 
+    def render_nav_menu(self):
+        options = NAV_MENU_CONFIG["options"]
+        title = NAV_MENU_CONFIG["title"]
+        t = Table(self, title, 0, 4, 4, 2, options, self.select_display)
+        return t
 
-class NowPlaying:
-    def __init__(self, root: py_cui.PyCUI):
-        self.master = root
-        print(root)
-        self.label = self.master.add_button(
-            "Now playing: {root.selected_track}",
-            6,
+    def select_display(self, selection):
+        print(f"DISPLAY SELECTED! {selection}")
+
+    def render_display(self, type):
+        details = DISPLAY_MENU_PAGES[type]
+        items = api.get(details["api_endpoint"])
+        items_formatted = [details["renderer"](item) for item in items]
+        t = Table(
+            self,
+            details["title"],
+            2,
             0,
-            row_span=1,
-            column_span=8,
-            padx=0,
-            pady=0,
-            command=self.control_playback,
+            8,
+            6,
+            items_formatted,
+            self.playtrack,
         )
+        return t
 
-    # def handle_select(self):
-    #     """handle selection"""
+    def playtrack(self, selection, buffer_callback, finish_loading_callback):
+        self.current_track = selection
+        playback.stream(self.current_track.id, buffer_callback, finish_loading_callback)
+        self.render_now_playing()
 
-    #     selection = self.table_rows.get()
-    #     if selection is None:
-    #         self.master.show_error_popup(
-    #             "No Item", "There is no item in the list to select"
-    #         )
-    #         return
-    #     self.select_callback(selection)
-
-    def control_playback(self):
-        """control playback"""
+    def stop_track(self):
         playback.stop()
+        self.current_track = {}
+        self.render_now_playing()

@@ -6,10 +6,20 @@ import py_cui
 
 
 class Table:
-    def __init__(self, root: py_cui.PyCUI, title: str, elements: list, select_callback):
-        self.master = root
+    def __init__(
+        self,
+        player,
+        title: str,
+        x_offset,
+        y_offset,
+        width,
+        height,
+        elements: list,
+        select_callback,
+    ):
+        self.master = player.root
         self.table_rows = self.master.add_scroll_menu(
-            title, 0, 0, row_span=8, column_span=8
+            title, x_offset, y_offset, row_span=height, column_span=width
         )
         self.table_rows.add_key_command(py_cui.keys.KEY_ENTER, self.handle_select)
         self.select_callback = select_callback
@@ -58,6 +68,6 @@ def render(title, rows, columns, elements, select_callback, exit_callback):
     app_title = f"🎵 Audius Terminal Music Player 🎵 ©️ {current_year}"
     root = py_cui.PyCUI(rows, columns)
     root.set_title(app_title)
-    t = Table(root, title, elements, select_callback)
+    t = Table(root, title, 0, 0, 8, 8, elements, select_callback)
     root.add_key_command(py_cui.keys.KEY_CTRL_C, exit_callback)
     root.start()

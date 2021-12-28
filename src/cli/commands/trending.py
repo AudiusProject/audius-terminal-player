@@ -1,11 +1,5 @@
 import click
-from src.libs import api, playback
-from src.tui.renderers.Track import Track
-from src.tui.components.Table import render
-
-
-def playtrack(selection, buffer_callback, finish_loading_callback):
-    playback.stream(selection.id, buffer_callback, finish_loading_callback)
+from src.libs import api, playback, utils
 
 
 @click.command()
@@ -16,13 +10,8 @@ def trending(rank):
     response = api.get("tracks/trending")
     track = response[index]
     track_id = track["id"]
-    playback.stream(track_id)
+    playback.stream(track_id, utils.noop, utils.noop)
 
 
 if __name__ == "__main__":
-    # trending() # TODO should we keep this?
-    trending_tracks = api.get("tracks/trending")
-    trending_tracks_formatted = [Track(track) for track in trending_tracks]
-    render(
-        "🌋 Trending Tracks 🚀", 8, 8, trending_tracks_formatted, playtrack, playback.stop
-    )
+    trending()

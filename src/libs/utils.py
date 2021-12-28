@@ -13,3 +13,7 @@ def numerize(num):
     if num < 10 ** 9:
         return f"{num/10**6:.1f}M"
     return num
+
+
+def noop():
+    pass
