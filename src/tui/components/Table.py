@@ -1,3 +1,6 @@
+import time
+import threading
+
 import py_cui
 
 
@@ -11,6 +14,29 @@ class Table:
         self.select_callback = select_callback
         self.table_rows.add_item_list(elements)
 
+    def handle_load(self):
+        # self.master.show_loading_bar_popup("Incrementing a counter...", 100)
+        self.master.show_loading_icon_popup("Buffering", "Loading... be patient ⌛")
+        operation_thread = threading.Thread(target=self.long_operation)
+        operation_thread.start()
+
+    def finish_load(self):
+        print("finish_load called")
+        self.master.stop_loading_popup()
+
+    def long_operation(self):
+        """A simple function that demonstrates a long callback operation performed while loading popup is open"""
+
+        counter = 0
+        for i in range(0, 100):
+            time.sleep(0.1)
+            counter = counter + 1
+            self.master.status_bar.set_text(str(counter))
+            # self.master.increment_loading_bar()
+            # When using a bar indicator, we will increment the completed counter. Will be ignored for loading icon popup
+        # This is what stops the loading popup and reenters overview mode
+        self.master.stop_loading_popup()
+
     def handle_select(self):
         """handle selection"""
 
@@ -20,7 +46,8 @@ class Table:
                 "No Item", "There is no item in the list to select"
             )
             return
-        self.select_callback(selection)
+
+        self.select_callback(selection, self.handle_load, self.finish_load)
 
 
 def render(title, rows, columns, elements, select_callback):
