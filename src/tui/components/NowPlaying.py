@@ -11,8 +11,8 @@ class NowPlaying:
             padx=padx,
             pady=pady,
             command=command,
-            # auto_focus_buttons=False,
         )
+        self.widget = self.label
 
     def get_now_playing(self):
         current_track = self.player.current_track

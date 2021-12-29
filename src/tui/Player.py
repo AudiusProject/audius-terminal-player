@@ -112,6 +112,10 @@ class Player:
         self.root.run_on_exit(playback.stop)
         self.render()
 
+    def set_help_text(self):
+        help_text = "Press - q - to exit player. Use ⬆️ ⬇️ ⬅️ ➡️ to move between menus. Enter to select a menu."
+        self.root.title_bar.set_text(help_text)
+
     def render(self):
         self.render_nav_menu(NAV_MENU_CONFIG)
         self.select_display(self.current_display_key)
@@ -172,13 +176,16 @@ class Player:
 
     def clear_widget(self, menu):
         if menu is not None:
-            if hasattr(menu, "table_rows"):
-                self.root.forget_widget(menu.table_rows)
-            elif hasattr(menu, "label"):
-                self.root.forget_widget(menu.label)
+            if hasattr(menu, "widget"):
+                self.root.forget_widget(menu.widget)
+
+    def add_key_bindings(self):
+        if hasattr(self, "root"):
+            self.root.add_key_command(py_cui.keys.KEY_SPACE, self.stop_track)
 
     def render_display(self):
         old_menu = self.display_menu
+        is_track_display = "Tracks" in self.current_display_key
 
         t = Table(
             self,
@@ -189,11 +196,15 @@ class Player:
             4,
             self.display_items,
             self.display_item_selection_handler,
-            True if "Tracks" in self.current_display_key else False,
+            is_track_display,
             py_cui.WHITE_ON_BLACK,
             py_cui.WHITE_ON_MAGENTA,
         )
         self.display_menu = t
+        if is_track_display:
+            self.display_menu.widget.add_key_command(
+                py_cui.keys.KEY_SPACE, self.stop_track
+            )
         self.clear_widget(old_menu)
 
     def show_search_popup(self):

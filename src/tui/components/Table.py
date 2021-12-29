@@ -17,7 +17,7 @@ class Table:
         height,
         elements: list,
         select_callback,
-        show_loading_progress: bool,
+        is_track_display: bool,
         text_color_normal,
         text_color_selection,
     ):
@@ -35,7 +35,14 @@ class Table:
             selected_color=text_color_selection,
             match_type="line",
         )
-        self.show_loading_progress = show_loading_progress
+        self.is_track_display = is_track_display
+        self.widget = self.table_rows
+        self.set_help_text()
+
+    def set_help_text(self):
+        help_text = "Use Up/Down/PgUp/PgDown/Home/End to scroll; Enter to submit or ▶️ ; Space to ⏹️ ; Esc to exit."
+
+        self.widget.set_help_text(help_text)
 
     def add_items(self, elements):
         if len(elements) > 0:
@@ -70,7 +77,7 @@ class Table:
             )
             return
         elif selection != NO_RESULTS:
-            if self.show_loading_progress:
+            if self.is_track_display:
                 self.select_callback(selection, self.handle_load, self.finish_load)
             else:
                 self.select_callback(selection)
