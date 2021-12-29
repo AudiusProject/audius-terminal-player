@@ -1,7 +1,9 @@
 import py_cui
 from datetime import date
 from src.libs import api, playback
-from src.tui.renderers.Track import Track
+from src.tui.models.Track import Track
+from src.tui.models.Playlist import Playlist
+from src.tui.models.User import User
 from src.tui.components.NowPlaying import NowPlaying
 from src.tui.components.Table import Table
 
@@ -18,12 +20,12 @@ DISPLAY_MENU_PAGES = {
     },
     "👥 Search Users 🔎": {
         "api_endpoint": "users/search",
-        "renderer": Track,
+        "renderer": User,
         "action": "search",
     },
     "📜 Search Playlists 🔎": {
         "api_endpoint": "playlists/search",
-        "renderer": Track,
+        "renderer": Playlist,
         "action": "search",
     },
 }
