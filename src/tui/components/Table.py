@@ -16,6 +16,7 @@ class Table:
         height,
         elements: list,
         select_callback,
+        show_loading_progress: bool,
     ):
         self.master = player.root
         self.table_rows = self.master.add_scroll_menu(
@@ -31,6 +32,7 @@ class Table:
             selected_color=py_cui.BLACK_ON_WHITE,
             match_type="line",
         )
+        self.show_loading_progress = show_loading_progress
 
     def handle_load(self):
         self.master.show_loading_bar_popup("Loading... be patient ⌛", 10)
@@ -60,14 +62,7 @@ class Table:
             )
             return
 
-        self.select_callback(selection, self.handle_load, self.finish_load)
-
-
-def render(title, rows, columns, elements, select_callback, exit_callback):
-    current_year = date.today().year
-    app_title = f"🎵 Audius Terminal Music Player 🎵 ©️ {current_year}"
-    root = py_cui.PyCUI(rows, columns)
-    root.set_title(app_title)
-    t = Table(root, title, 0, 0, 8, 8, elements, select_callback)
-    root.add_key_command(py_cui.keys.KEY_CTRL_C, exit_callback)
-    root.start()
+        if self.show_loading_progress:
+            self.select_callback(selection, self.handle_load, self.finish_load)
+        else:
+            self.select_callback(selection)
