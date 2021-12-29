@@ -1,5 +1,4 @@
 #!/bin/bash
-export PYTHONPATH=./
 
 # CLI - deprecate?
 # CMD=$1
@@ -10,4 +9,4 @@ export PYTHONPATH=./
 
 # else print help file
 
-python3 "src/tui/__init__.py"
+python3 "src/__init__.py"
