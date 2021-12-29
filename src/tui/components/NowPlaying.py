@@ -17,5 +17,5 @@ class NowPlaying:
     def get_now_playing(self):
         current_track = self.player.current_track
         if current_track:
-            return f"📻 Now Playing -> {current_track.title} by {current_track.artist}"
+            return f"📻 Now Playing 🔊 -> {current_track.title} by {current_track.artist}"
         return "💫 Pick a track to listen to awesome music!"
