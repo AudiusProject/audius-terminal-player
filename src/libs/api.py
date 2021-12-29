@@ -14,12 +14,11 @@ def make_uri(path):
     return uri
 
 
-def download_file(uri, done):
+def download_file(uri):
     temp = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_DIR)
     with requests.get(uri, stream=True) as r:
         with open(temp.name, "wb") as f:
             shutil.copyfileobj(r.raw, f)
-    done()
     return temp.name
 
 

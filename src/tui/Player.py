@@ -117,6 +117,7 @@ class Player:
         self.root.title_bar.set_text(help_text)
 
     def render(self):
+        self.root.stop()
         self.render_nav_menu(NAV_MENU_CONFIG)
         self.select_display(self.current_display_key)
         self.render_now_playing()
@@ -127,7 +128,6 @@ class Player:
         self.now_playing = n
 
     def render_nav_menu(self, menu_config):
-        self.clear_widget(self.nav_menu)
         options = menu_config["options"]
         title = menu_config["title"]
         t = Table(
@@ -143,7 +143,12 @@ class Player:
             py_cui.MAGENTA_ON_BLACK,
             py_cui.WHITE_ON_MAGENTA,
         )
+        self.change_widget(self.nav_menu, t)
         self.nav_menu = t
+        if menu_config["title"] == CONSTANTS["USER_NAVIGATION"]:
+            self.nav_menu.widget.add_key_command(
+                py_cui.keys.KEY_SPACE, lambda: self.render_nav_menu(NAV_MENU_CONFIG)
+            )
 
     def select_display(self, selection):
         DISPLAY_ACTION_TO_HANDLER_MAP = {
@@ -174,10 +179,12 @@ class Player:
         ]
         self.render_display()
 
-    def clear_widget(self, menu):
+    def change_widget(self, menu, new_widget):
         if menu is not None:
             if hasattr(menu, "widget"):
+                old_position = menu.widget.get_id()
                 self.root.forget_widget(menu.widget)
+                self.root._widgets[id] = new_widget.widget
 
     def add_key_bindings(self):
         if hasattr(self, "root"):
@@ -200,12 +207,12 @@ class Player:
             py_cui.WHITE_ON_BLACK,
             py_cui.WHITE_ON_MAGENTA,
         )
+        self.change_widget(old_menu, t)
         self.display_menu = t
         if is_track_display:
             self.display_menu.widget.add_key_command(
                 py_cui.keys.KEY_SPACE, self.stop_track
             )
-        self.clear_widget(old_menu)
 
     def show_search_popup(self):
         search_title = self.current_display_key
@@ -236,9 +243,9 @@ class Player:
         self.render_nav_menu(USER_MENU_CONFIG)
         self.select_display(CONSTANTS["USER_TRACKS"])
 
-    def play_track(self, track, buffer_callback, finish_loading_callback):
+    def play_track(self, track):
         self.current_track = track
-        playback.stream(self.current_track.id, buffer_callback, finish_loading_callback)
+        playback.stream(self.current_track.id)
         self.render_now_playing()
 
     def stop_track(self):

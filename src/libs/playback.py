@@ -2,11 +2,10 @@ import subprocess
 from src.libs import api
 
 
-def stream(track_id, progress_callback, finish_loading_callback):
-    progress_callback()
+def stream(track_id):
     uri = api.make_uri(f"tracks/{track_id}/stream")
     download_uri = api.get_redirect_uri(uri)
-    local_filepath = api.download_file(download_uri, finish_loading_callback)
+    local_filepath = api.download_file(download_uri)
     stop()
     subprocess.Popen(["afplay", local_filepath])
 

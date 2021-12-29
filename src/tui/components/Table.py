@@ -78,6 +78,6 @@ class Table:
             return
         elif selection != NO_RESULTS:
             if self.is_track_display:
-                self.select_callback(selection, self.handle_load, self.finish_load)
+                self.select_callback(selection)
             else:
                 self.select_callback(selection)
