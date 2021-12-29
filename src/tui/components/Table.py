@@ -1,8 +1,9 @@
-from datetime import date
 import time
 import threading
 
 import py_cui
+
+NO_RESULTS = "Nothing to display! Try searching for your heart's desire 😻"
 
 
 class Table:
@@ -24,7 +25,7 @@ class Table:
         )
         self.table_rows.add_key_command(py_cui.keys.KEY_ENTER, self.handle_select)
         self.select_callback = select_callback
-        self.table_rows.add_item_list(elements)
+        self.add_items(elements)
         self.table_rows.add_text_color_rule(
             "",
             py_cui.WHITE_ON_BLACK,
@@ -33,6 +34,12 @@ class Table:
             match_type="line",
         )
         self.show_loading_progress = show_loading_progress
+
+    def add_items(self, elements):
+        if len(elements) > 0:
+            self.table_rows.add_item_list(elements)
+        else:
+            self.table_rows.add_item_list([NO_RESULTS])
 
     def handle_load(self):
         self.master.show_loading_bar_popup("Loading... be patient ⌛", 10)
@@ -61,8 +68,8 @@ class Table:
                 "No Item", "There is no item in the list to select"
             )
             return
-
-        if self.show_loading_progress:
-            self.select_callback(selection, self.handle_load, self.finish_load)
-        else:
-            self.select_callback(selection)
+        elif selection != NO_RESULTS:
+            if self.show_loading_progress:
+                self.select_callback(selection, self.handle_load, self.finish_load)
+            else:
+                self.select_callback(selection)

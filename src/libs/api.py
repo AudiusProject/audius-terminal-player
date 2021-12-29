@@ -1,6 +1,6 @@
-import requests
 import shutil
 import tempfile
+import requests
 from src.libs import utils
 
 AUDIUS_API_ENDPOINT = "https://api.audius.co"
@@ -33,7 +33,7 @@ def get(path, payload={}):
     uri = make_uri(path)
     r = requests.get(uri, params=payload)
     body = r.json()
-    return body["data"]
+    return body.get("data", [])
 
 
 def get_api_endpoint():
