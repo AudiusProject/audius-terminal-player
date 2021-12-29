@@ -18,6 +18,8 @@ class Table:
         elements: list,
         select_callback,
         show_loading_progress: bool,
+        text_color_normal,
+        text_color_selection,
     ):
         self.master = player.root
         self.table_rows = self.master.add_scroll_menu(
@@ -28,9 +30,9 @@ class Table:
         self.add_items(elements)
         self.table_rows.add_text_color_rule(
             "",
-            py_cui.WHITE_ON_BLACK,
+            text_color_normal,
             "contains",
-            selected_color=py_cui.BLACK_ON_WHITE,
+            selected_color=text_color_selection,
             match_type="line",
         )
         self.show_loading_progress = show_loading_progress
@@ -61,7 +63,6 @@ class Table:
 
     def handle_select(self):
         """handle selection"""
-
         selection = self.table_rows.get()
         if selection is None:
             self.master.show_error_popup(
