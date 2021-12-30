@@ -124,24 +124,28 @@ class Player:
     def render_nav_menu(self, menu_config):
         options = menu_config["options"]
         title = menu_config["title"]
-        t = Table(
-            self,
-            title,
-            0,
-            4,
-            2,
-            2,
-            options,
-            self.select_display,
-            False,
-            py_cui.MAGENTA_ON_BLACK,
-            py_cui.WHITE_ON_MAGENTA,
-        )
-        self.change_widget(self.nav_menu, t)
-        self.nav_menu = t
+        if self.nav_menu is not None:
+            self.nav_menu.update(title, options, self.select_display)
+        else:
+
+            t = Table(
+                self,
+                title,
+                0,
+                4,
+                2,
+                2,
+                options,
+                self.select_display,
+                py_cui.MAGENTA_ON_BLACK,
+                py_cui.WHITE_ON_MAGENTA,
+            )
+            self.nav_menu = t
+
         if menu_config["title"] == CONSTANTS["USER_NAVIGATION"]:
             self.nav_menu.widget.add_key_command(
-                py_cui.keys.KEY_SPACE, lambda: self.render_nav_menu(NAV_MENU_CONFIG)
+                py_cui.keys.KEY_SPACE, lambda: self.render_nav_menu(
+                    NAV_MENU_CONFIG)
             )
 
     def select_display(self, selection):
@@ -178,36 +182,29 @@ class Player:
         ]
         self.render_display()
 
-    def change_widget(self, menu, new_widget):
-        if menu is not None:
-            if hasattr(menu, "widget"):
-                old_position = menu.widget.get_id()
-                self.root.forget_widget(menu.widget)
-                self.root._widgets[old_position] = new_widget.widget
-
     def add_key_bindings(self):
         if hasattr(self, "root"):
             self.root.add_key_command(py_cui.keys.KEY_SPACE, self.stop_track)
 
     def render_display(self):
-        old_menu = self.display_menu
-        is_track_display = "Tracks" in self.current_display_key
-        t = Table(
-            self,
-            self.current_display_key,
-            2,
-            0,
-            6,
-            4,
-            self.display_items,
-            self.display_item_selection_handler,
-            is_track_display,
-            py_cui.WHITE_ON_BLACK,
-            py_cui.WHITE_ON_MAGENTA,
-        )
-        self.change_widget(old_menu, t)
-        self.display_menu = t
-        if is_track_display:
+        if self.display_menu is not None:
+            self.display_menu.update(
+                self.current_display_key, self.display_items, self.display_item_selection_handler
+            )
+        else:
+            t = Table(
+                self,
+                self.current_display_key,
+                2,
+                0,
+                6,
+                4,
+                self.display_items,
+                self.display_item_selection_handler,
+                py_cui.WHITE_ON_BLACK,
+                py_cui.WHITE_ON_MAGENTA,
+            )
+            self.display_menu = t
             self.display_menu.widget.add_key_command(
                 py_cui.keys.KEY_SPACE, self.stop_track
             )
