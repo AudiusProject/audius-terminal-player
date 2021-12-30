@@ -1,6 +1,6 @@
 # audius-cli
 
-[![asciicast](https://asciinema.org/a/1qiv8eHbwUktlfqwLnjFG3NkV.svg)](https://asciinema.org/a/1qiv8eHbwUktlfqwLnjFG3NkV)
+<p align="center"><img src="demo.gif?raw=true"/></p>
 
 Terminal-based music player written in Python for the best music in the world 🎵 🎧 💻
 
