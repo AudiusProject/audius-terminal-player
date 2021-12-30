@@ -127,7 +127,6 @@ class Player:
         if self.nav_menu is not None:
             self.nav_menu.update(title, options, self.select_display)
         else:
-
             t = Table(
                 self,
                 title,

@@ -39,9 +39,10 @@ python -m src
 
 ## Build & Release 📦 🚢
 
-1. Bump version in [`setup.cfg`](setup.cfg)
+1. Bump version in [`setup.cfg`](setup.cfg) manually
 2. Make a GitHub tagged release with the new version
 3. Update [release URL and SHA](https://github.com/AudiusProject/homebrew-audius-cli/blob/main/Formula/audius.rb#L6-L7) in [homebrew-audius-cli](https://github.com/AudiusProject/homebrew-audius-cli)
 
 ---
+
 Created with ❤️ 🍕 🍾 (last but not least) for the Audius Engineering Team Hackathon 2021.
