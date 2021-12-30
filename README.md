@@ -4,7 +4,7 @@
 
 Terminal-based music player written in Python for the best music in the world 🎵 🎧 💻
 
-Why open [Audius](audius.co) when you can browse and listen from the comfort of your very own terminal? 🧐
+Why open [Audius](https://audius.co) when you can browse and listen from the comfort of your very own terminal? 🧐 😜 🎶 (jk; our [ui](https://github.com/AudiusProject/audius-client) is the best!)
 
 Supported/tested platforms: MacOS 12+ 
 
