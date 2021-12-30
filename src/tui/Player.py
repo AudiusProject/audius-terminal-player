@@ -18,58 +18,55 @@ CONSTANTS = {
     "USER_REPOSTED_TRACKS": "👤 User Reposted Tracks 🔁",
     "MAIN_NAVIGATION": "🗺️  Navigation 🔭",
     "USER_NAVIGATION": "👤 User Navigation 🌎",
-    "APP_TITLE": "🎵 Audius Terminal Music Player 🎵",
+    "APP_TITLE": f"🎵 Audius Terminal Music Player 🎵  ©️ {date.today().year}",
 }
+
 DEFAULT_DISPLAY = CONSTANTS["TRENDING_TRACKS"]
 DISPLAY_MENU_PAGES = {
     CONSTANTS["TRENDING_TRACKS"]: {
-        "api_endpoint": "tracks/trending",
+        "api_method": api.get_trending,
         "renderer": Track,
         "action": "get",
     },
     CONSTANTS["SEARCH_TRACKS"]: {
-        "api_endpoint": "tracks/search",
+        "api_method": api.search_entity("tracks"),
         "renderer": Track,
         "action": "search",
     },
     CONSTANTS["SEARCH_USERS"]: {
-        "api_endpoint": "users/search",
+        "api_method": api.search_entity("users"),
         "renderer": User,
         "action": "search",
     },
     CONSTANTS["SEARCH_PLAYLISTS"]: {
-        "api_endpoint": "playlists/search",
+        "api_method": api.search_entity("playlists"),
         "renderer": Playlist,
         "action": "search",
     },
     CONSTANTS["PLAYLIST_TRACKS"]: {
-        "api_endpoint": "playlists/{id}/tracks",
+        "api_method": api.get_playlist_tracks,
         "renderer": Track,
         "action": "get",
-        "has_tracks": True,
         "hide_from_nav": True,
     },
     CONSTANTS["USER_TRACKS"]: {
-        "api_endpoint": "users/{id}/tracks",
+        "api_method": api.get_user_tracks,
         "renderer": Track,
         "action": "get",
-        "has_tracks": True,
         "hide_from_nav": True,
         "is_user_nav": True,
     },
     CONSTANTS["USER_FAVORITE_TRACKS"]: {
-        "api_endpoint": "users/{id}/favorites",
+        "api_method": api.get_favorite_tracks,
         "renderer": Track,
         "action": "get",
-        "has_tracks": True,
         "hide_from_nav": True,
         "is_user_nav": True,
     },
     CONSTANTS["USER_REPOSTED_TRACKS"]: {
-        "api_endpoint": "users/{id}/reposts",
+        "api_method": api.get_reposted_tracks,
         "renderer": Track,
         "action": "get",
-        "has_tracks": True,
         "hide_from_nav": True,
         "is_user_nav": True,
     },
@@ -97,15 +94,13 @@ USER_MENU_CONFIG = {
 class Player:
     def __init__(self):
         root = py_cui.PyCUI(6, 6)
-        current_year = date.today().year
-        app_title = f"{CONSTANTS['APP_TITLE']} ©️ {current_year}"
-        root.set_title(app_title)
+        root.set_title(CONSTANTS["APP_TITLE"])
         self.root = root
         self.current_display_key = DEFAULT_DISPLAY
         self.display_item_selection_handler = None
         self.display_items = []
         self.display_menu = None
-        self.track_containing_entity_id = ""
+        self.selected_entity = None
         self.nav_menu = None
         self.now_playing = None
         self.current_track = {}
@@ -117,7 +112,6 @@ class Player:
         self.root.title_bar.set_text(help_text)
 
     def render(self):
-        self.root.stop()
         self.render_nav_menu(NAV_MENU_CONFIG)
         self.select_display(self.current_display_key)
         self.render_now_playing()
@@ -152,26 +146,31 @@ class Player:
 
     def select_display(self, selection):
         DISPLAY_ACTION_TO_HANDLER_MAP = {
-            "get": self.get_api,
+            "get": self.api_get,
             "search": self.show_search_popup,
         }
         selection_details = DISPLAY_MENU_PAGES[selection]
+        if selection == CONSTANTS["TRENDING_TRACKS"]:
+            self.selected_entity = None
         self.current_display_key = selection
         display_action = selection_details["action"]
         action_handler = DISPLAY_ACTION_TO_HANDLER_MAP[display_action]
         action_handler()
 
-    def get_api(self):
+    def api_get(self, search_query=None):
         DISPLAY_RENDERER_TO_SELECTION_HANDLER_MAP = {
             Track: self.play_track,
             Playlist: self.set_playlist,
             User: self.set_user,
         }
         details = DISPLAY_MENU_PAGES[self.current_display_key]
-        endpoint = details["api_endpoint"]
-        if details.get("has_tracks", False):
-            endpoint = endpoint.replace("{id}", self.track_containing_entity_id)
-        items = api.get(endpoint)
+        method = details["api_method"]
+        api_arg = None
+        if search_query:
+            api_arg = search_query
+        elif self.selected_entity:
+            api_arg = self.selected_entity.id
+        items = method(api_arg) if api_arg else method()
         items_formatted = [details["renderer"](item) for item in items]
         self.display_items = items_formatted
         self.display_item_selection_handler = DISPLAY_RENDERER_TO_SELECTION_HANDLER_MAP[
@@ -184,7 +183,7 @@ class Player:
             if hasattr(menu, "widget"):
                 old_position = menu.widget.get_id()
                 self.root.forget_widget(menu.widget)
-                self.root._widgets[id] = new_widget.widget
+                self.root._widgets[old_position] = new_widget.widget
 
     def add_key_bindings(self):
         if hasattr(self, "root"):
@@ -193,7 +192,6 @@ class Player:
     def render_display(self):
         old_menu = self.display_menu
         is_track_display = "Tracks" in self.current_display_key
-
         t = Table(
             self,
             self.current_display_key,
@@ -216,30 +214,14 @@ class Player:
 
     def show_search_popup(self):
         search_title = self.current_display_key
-        self.root.show_text_box_popup(search_title, self.submit_search)
-
-    def submit_search(self, query):
-        SEARCH_TITLE_TO_HANDLER_MAP = {
-            CONSTANTS["SEARCH_PLAYLISTS"]: self.set_playlist,
-            CONSTANTS["SEARCH_USERS"]: self.set_user,
-            CONSTANTS["SEARCH_TRACKS"]: self.play_track,
-        }
-        details = DISPLAY_MENU_PAGES[self.current_display_key]
-        search_params = {"query": query}
-        results = api.get(details["api_endpoint"], search_params)
-        formatted_results = [details["renderer"](item) for item in results]
-        self.display_items = formatted_results
-        self.display_item_selection_handler = SEARCH_TITLE_TO_HANDLER_MAP[
-            self.current_display_key
-        ]
-        self.render_display()
+        self.root.show_text_box_popup(search_title, self.api_get)
 
     def set_playlist(self, playlist):
-        self.track_containing_entity_id = playlist.id
+        self.selected_entity = playlist
         self.select_display(CONSTANTS["PLAYLIST_TRACKS"])
 
     def set_user(self, user):
-        self.track_containing_entity_id = user.id
+        self.selected_entity = user
         self.render_nav_menu(USER_MENU_CONFIG)
         self.select_display(CONSTANTS["USER_TRACKS"])
 
