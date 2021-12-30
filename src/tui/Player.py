@@ -8,14 +8,14 @@ from src.tui.components.NowPlaying import NowPlaying
 from src.tui.components.Table import Table
 
 CONSTANTS = {
-    "TRENDING_TRACKS": "🌋 Trending Tracks 🚀",
-    "SEARCH_TRACKS": "🎼 Search Tracks 🔎",
-    "SEARCH_USERS": "👥 Search Users 🔎",
-    "SEARCH_PLAYLISTS": "📜 Search Playlists 🔎",
-    "PLAYLIST_TRACKS": "📜 Playlist Tracks 🎵",
-    "USER_TRACKS": "👤 User Tracks 🎵",
-    "USER_FAVORITE_TRACKS": "👤 User Favorite Tracks 💖",
-    "USER_REPOSTED_TRACKS": "👤 User Reposted Tracks 🔁",
+    "TRENDING_TRACKS": "🌋 Trending Tracks",
+    "SEARCH_TRACKS": "🔎 Search Tracks",
+    "SEARCH_USERS": "👥 Search Users",
+    "SEARCH_PLAYLISTS": "📜 Search Playlists",
+    "PLAYLIST_TRACKS": "📜 Playlist Tracks",
+    "USER_TRACKS": "🎵 User Tracks",
+    "USER_FAVORITE_TRACKS": "💖 User Favorite Tracks",
+    "USER_REPOSTED_TRACKS": "🔁 User Reposted Tracks",
     "MAIN_NAVIGATION": "🗺️  Navigation 🔭",
     "USER_NAVIGATION": "👤 User Navigation 🌎",
     "APP_TITLE": f"🎵 Audius Terminal Music Player 🎵  ©️ {date.today().year}",
@@ -144,8 +144,7 @@ class Player:
 
         if menu_config["title"] == CONSTANTS["USER_NAVIGATION"]:
             self.nav_menu.widget.add_key_command(
-                py_cui.keys.KEY_SPACE, lambda: self.render_nav_menu(
-                    NAV_MENU_CONFIG)
+                py_cui.keys.KEY_SPACE, lambda: self.render_nav_menu(NAV_MENU_CONFIG)
             )
 
     def select_display(self, selection):
@@ -189,7 +188,9 @@ class Player:
     def render_display(self):
         if self.display_menu is not None:
             self.display_menu.update(
-                self.current_display_key, self.display_items, self.display_item_selection_handler
+                self.current_display_key,
+                self.display_items,
+                self.display_item_selection_handler,
             )
         else:
             t = Table(

@@ -12,11 +12,10 @@ class Playlist:
         self.plays = metadata["total_play_count"]
 
     def __repr__(self):
-        return " | ".join(
+        return " ".join(
             (
                 f"💖  {utils.numerize(self.favs):5} |",
-                f"🔁  {utils.numerize(self.reposts):5} |",
-                f"💽  {self.name}",
-                f"👤  {self.creator}",
+                f"🔁  {utils.numerize(self.reposts):5} ||",
+                f"💽  {self.name} by {self.creator}",
             )
         )
