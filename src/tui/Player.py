@@ -1,6 +1,6 @@
 import py_cui
 from datetime import date
-from src.libs import api, playback
+from src.libs import api, playback, utils
 from src.tui.models.Track import Track
 from src.tui.models.Playlist import Playlist
 from src.tui.models.User import User
@@ -90,6 +90,17 @@ USER_MENU_CONFIG = {
     "title": CONSTANTS["USER_NAVIGATION"],
 }
 
+KONAMI_CODE = [
+    py_cui.keys.KEY_UP_ARROW,
+    py_cui.keys.KEY_UP_ARROW,
+    py_cui.keys.KEY_DOWN_ARROW,
+    py_cui.keys.KEY_DOWN_ARROW,
+    py_cui.keys.KEY_LEFT_ARROW,
+    py_cui.keys.KEY_RIGHT_ARROW,
+    py_cui.keys.KEY_B_LOWER,
+    py_cui.keys.KEY_A_LOWER,
+]
+
 
 class Player:
     def __init__(self):
@@ -105,7 +116,32 @@ class Player:
         self.now_playing = None
         self.current_track = {}
         self.root.run_on_exit(playback.stop)
+        self.konami_index = 0
+        self.add_konami_code()
         self.render()
+
+    def add_konami_code(self):
+        for key in set(KONAMI_CODE):
+            existing_callback = (
+                self.root._keybindings[key]
+                if key in self.root._keybindings
+                else utils.noop
+            )
+
+            def konami_handler(k):
+                def konami_callback():
+                    existing_callback()
+                    if KONAMI_CODE[self.konami_index] == k:
+                        self.konami_index += 1
+                        if self.konami_index == len(KONAMI_CODE):
+                            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                            self.konami_index = 0
+                    else:
+                        self.konami_index = 0
+
+                return konami_callback
+
+            self.root.add_key_command(key, konami_handler(key))
 
     def set_help_text(self):
         help_text = "Press - q - to exit player. Use ⬆️ ⬇️ ⬅️ ➡️ to move between menus. Enter to select a menu."
