@@ -1,4 +1,4 @@
-# audius-cli
+# audius-terminal-player
 
 <p align="center"><img src="demo.gif?raw=true"/></p>
 
