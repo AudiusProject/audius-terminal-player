@@ -15,8 +15,8 @@ Supported/tested platforms: MacOS 12+ 
 - ☕ [Homebrew](https://brew.sh/)
 
 ```
-$ brew tap audiusproject/audius-cli
-$ brew install audius
+brew tap audiusproject/audius-terminal-player
+brew install audius-terminal-player
 ```
 
 ## Features ✨
@@ -43,7 +43,7 @@ python -m src
 
 1. Bump version in [`setup.cfg`](setup.cfg) manually
 2. Make a GitHub tagged release with the new version
-3. Update [release URL and SHA](https://github.com/AudiusProject/homebrew-audius-cli/blob/main/Formula/audius.rb#L6-L7) in [homebrew-audius-cli](https://github.com/AudiusProject/homebrew-audius-cli)
+3. Update [release URL and SHA](https://github.com/AudiusProject/homebrew-audius-terminal-player/blob/main/Formula/audius-terminal-player.rb#L6-L7) in [homebrew-audius-terminal-player](https://github.com/AudiusProject/homebrew-audius-terminal-player)
 
 ---
 
