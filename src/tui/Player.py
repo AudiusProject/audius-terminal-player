@@ -121,6 +121,7 @@ class Player:
         self.render()
 
     def add_konami_code(self):
+        SECRET_EASTER_EGG_TRACK_PATH = "tracks?handle=cheran1729&slug=wat-1"
         for key in set(KONAMI_CODE):
             existing_callback = (
                 self.root._keybindings[key]
@@ -134,7 +135,10 @@ class Player:
                     if KONAMI_CODE[self.konami_index] == k:
                         self.konami_index += 1
                         if self.konami_index == len(KONAMI_CODE):
-                            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                            easter_egg_track = Track(
+                                api.get(SECRET_EASTER_EGG_TRACK_PATH)
+                            )
+                            self.play_track(easter_egg_track)
                             self.konami_index = 0
                     else:
                         self.konami_index = 0
