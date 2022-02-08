@@ -7,10 +7,10 @@ def stream(track_id):
     download_uri = api.get_redirect_uri(uri)
     local_filepath = api.download_file(download_uri)
     stop()
-    subprocess.Popen(["afplay", local_filepath])
+    subprocess.Popen(["mpv", local_filepath])
 
 
 def stop():
     subprocess.call(
-        ["killall", "afplay"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        ["killall", "mpv"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
