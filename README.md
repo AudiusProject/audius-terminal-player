@@ -6,14 +6,16 @@ Terminal-based music player written in Python for the best music in the world �
 
 Browse and listen to [Audius](https://audius.co) from the comfort of your very own terminal. 🎶
 
-Supported/tested platforms: MacOS 12+ 
+Supported/tested platforms: MacOS 12+ , Arch Linux
+
+## 📝 Prerequisites:
+
+- ☕ [Homebrew](https://brew.sh/)
+- [mpv](https://mpv.io/)
 
 ## Install
 
-📝 Prerequisites:
-
-- ☕ [Homebrew](https://brew.sh/)
-
+### macOS
 ```
 brew tap audiusproject/audius-terminal-player
 brew install audius-terminal-player
